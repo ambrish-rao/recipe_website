@@ -7,27 +7,28 @@ import foodRouter from "./routes/foodRoute.js"
 // app config
 const app = express()
 const port = 4000
-
 //  Middleware
 app.use(express.json())
 app.use(cors())
 
-// DB Connection 
-connectDB();
+// Log image requests
+app.use('/images', (req, res, next) => {
+  console.log('Image request:', req.url)
+  next()
+})
 
+app.use("/images", express.static("uploads"))
+
+// DB Connection 
+connectDB()
 
 // API Endpoint 
-    app.use("/api/food", foodRouter)
-    app.use("/images", express.static("uploads"))
-
+app.use("/api/food", foodRouter)
 
 app.get("/", (req, res) => {
   res.send("API is working")
 })
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`)
-    })
-
-
-    //mongodb+srv://ambrishrao2494:<db_password>@cluster0.e5xna8z.mongodb.net/?
+  console.log(`Server is running on http://localhost:${port}`)
+})

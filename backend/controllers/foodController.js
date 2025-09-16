@@ -2,29 +2,29 @@ import express from "express";
 import foodModel from "../models/foodModel.js";
 import fs from "fs";
 
-
-// Add Food Item
-
+// ✅ Add Food Item
 const addFood = async (req, res) => {
+    // ✅ Use multer's actual filename instead of creating your own
+    const image_filename = req.file.filename;
 
-    let image_filename = `${Date.now()}-${req.file.originalname}`; // Construct the image filename
     const food = new foodModel({
         name: req.body.name,
         description: req.body.description,
         price: req.body.price,
         category: req.body.category,
-        image: image_filename, // Use the constructed filename
+        image: image_filename,
     });
-    try{
+
+    try {
         await food.save();
-        res.json({ success: true, message : "Food item added successfully!" });
+        res.json({ success: true, message: "Food item added successfully!" });
     } catch (error) {
         console.error("Error adding food item:", error);
         res.json({ success: false, message: "Error adding food item." });
     }
-}
+};
 
-// All Food List
+// ✅ All Food List
 const listFood = async (req, res) => {
     try {
         const foods = await foodModel.find({});
@@ -35,19 +35,18 @@ const listFood = async (req, res) => {
     }
 };
 
-// Remove Food Item
-
+// ✅ Remove Food Item
 const removeFood = async (req, res) => {
-    try{
+    try {
         const food = await foodModel.findById(req.body.id);
-        fs.unlink(`uploads/${food.image}`,() => {});
-    
+        fs.unlink(`uploads/${food.image}`, () => {});
+
         await foodModel.findByIdAndDelete(req.body.id);
-    res.json({ success: true, message: "Food item removed successfully!" });
+        res.json({ success: true, message: "Food item removed successfully!" });
     } catch (error) {
         console.log("Error removing food item:", error);
         res.json({ success: false, message: "Error removing food item." });
     }
-}
+};
 
 export { addFood, listFood, removeFood };
